@@ -25,11 +25,6 @@ public class CommonActions {
                 .get(apiVersionTest+"/{product}");
     }
 
-    @Then("Return error result")
-    public void returnError() {
-        restAssuredThat(response -> response.body(DETAIL_ERROR.getField(), equalTo(true)));
-    }
-
     @When("Authorized user call {string}")
     public void authorizedCall(String endPoint) {
         given()

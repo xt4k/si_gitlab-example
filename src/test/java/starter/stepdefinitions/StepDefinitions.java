@@ -62,7 +62,7 @@ public class StepDefinitions {
 
     @Then("does not see the results")
     public void noResults() {
-        actions.returnError();
+        responseVerification.returnError();
     }
 
     @Then("search result is successful")
@@ -91,17 +91,8 @@ public class StepDefinitions {
     }
 
     @Then("all product in search results contains {string}")
-    public void allProductInSearchResultContain(String type) {
-        restAssuredThat(response -> {
-            List<Drink> drinks;
-            try {
-                drinks = new ObjectMapper().readValue(response.extract().jsonPath().prettyPrint(), new TypeReference<List<Drink>>() {});
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-            drinks.forEach(a -> a.title.contains(type));
-
-        });
+    public void allProductInSearchResultContain(String type) throws JsonProcessingException {
+        responseVerification.allProductTitlesContains(type);
     }
 
     /********************************* AND *********************************/
@@ -111,8 +102,9 @@ public class StepDefinitions {
     }
 
     @And("response field {string} has value {string}")
-    public void responseFieldHasValue(String field, String fieldValue) {
-        then().body(field, is(fieldValue));
+    public void responseFieldHasValue(String field, String value) {
+        responseVerification.fieldHasValue(field,value);
+
     }
 
     @And("account contains user name")

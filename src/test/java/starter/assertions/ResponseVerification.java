@@ -5,21 +5,23 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
+import net.serenitybdd.rest.SerenityRest;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import starter.pojo.Account;
+import starter.pojo.Drink;
 
 import java.util.HashMap;
 import java.util.List;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static net.serenitybdd.rest.SerenityRest.lastResponse;
-import static net.serenitybdd.rest.SerenityRest.then;
+import static net.serenitybdd.rest.SerenityRest.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static starter.enums.Const.DETAIL_ERROR;
 import static starter.enums.Const.UNAUTHORIZED;
 
 public class ResponseVerification {
@@ -74,4 +76,21 @@ public class ResponseVerification {
     public void unauthorized() {
         then().statusCode(401).body(UNAUTHORIZED.getField(), is(UNAUTHORIZED.getValue()));
     }
+
+    @Then("Each product in search results contains {string}")
+    public void allProductTitlesContains(String type) throws JsonProcessingException {
+        List<Drink> drinks = new ObjectMapper().readValue( then().extract().jsonPath().prettyPrint(), new TypeReference<List<Drink>>() {});
+        drinks.forEach(a -> a.title.contains(type));
+    }
+
+    @Then("Response field {string} has value {string}")
+    public void fieldHasValue(String field,String value) {
+        then().body(field, is(value));
+    }
+
+    @Then("Return error result")
+    public void returnError() {
+        then().body(DETAIL_ERROR.getField(), equalTo(true));
+    }
+
 }
